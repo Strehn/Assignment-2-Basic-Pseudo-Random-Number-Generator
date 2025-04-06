@@ -20,5 +20,10 @@ clean:
 run: $(TARGET)
 	./$(TARGET)
 
+# Run the tests using test.sh
+test: all
+	chmod +x test.sh
+	./test.sh
+
 # Phony targets
 .PHONY: all clean run
