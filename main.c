@@ -19,7 +19,8 @@ int main() {
     int count = 10;
     int numbers[count]; // Array to store generated numbers
 
-    // Use the current time as a seed for randomness (can also accept user input)
+    // Use the current time as a seed for randomness 
+    // do not change this otherwise you will fail the test cases
     unsigned int seed = time(NULL); 
 
     // Generate random numbers using LCG (Linear Congruential Generator)
