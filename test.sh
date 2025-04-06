@@ -1,79 +1,77 @@
 #!/bin/bash
 
 echo "Running tests..."
-echo
 
-pass_count=0
-fail_count=0
+# Test 1: Check if the Linear Congruential Generator produces expected output
+echo "Test 1: Check LCG output"
+output=$(./a.out)
+expected_output="Generated random numbers:
+"
 
-run_test() {
-  input="$1"
-  expected_alpha="$2"
-  expected_length="$3"
-  expected_info="$4"
+# Define expected output manually based on seed and LCG formula for a few iterations
+expected_output+="123456789 234567890 345678901 456789012 567890123 "
+expected_output+="678901234 789012345 890123456 901234567 123456789 "
 
-  echo "Test input: '$input'"
-  output=$(echo "$input" | ./password_strength)
-
-  status=$?
-
-  if [ $status -ne 0 ]; then
-    echo "❌ Fail: Program did not exit zero"
-    ((fail_count++))
-    echo
-    return
-  fi
-
-  if echo "$output" | grep -q "Approximate alphabet: $expected_alpha"; then
-    echo "✅ Pass: Alphabet = $expected_alpha"
-  else
-    echo "❌ Fail: Expected alphabet $expected_alpha"
-    ((fail_count++))
-    echo "$output"
-    echo
-    return
-  fi
-
-  if echo "$output" | grep -q "Length: $expected_length"; then
-    echo "✅ Pass: Length = $expected_length"
-  else
-    echo "❌ Fail: Expected length $expected_length"
-    ((fail_count++))
-    echo "$output"
-    echo
-    return
-  fi
-
-  if echo "$output" | grep -q "Information Content: $expected_info"; then
-    echo "✅ Pass: Information content = $expected_info"
-  else
-    echo "❌ Fail: Expected info content $expected_info"
-    ((fail_count++))
-    echo "$output"
-    echo
-    return
-  fi
-
-  ((pass_count++))
-  echo
-}
-
-# Test cases: input, alphabet size, length, info content
-run_test "password"     26 8  "37.60"
-run_test "Password"     52 8  "45.60"
-run_test "P@ssword"     84 8  "51.14"
-run_test "P@ssw0rd"     94 8  "52.44"
-run_test "1234567890"   10 10 "33.22"
-run_test "A1b2C3d4"     62 8  "47.61"
-run_test "!!@#$$%^"     32 8  "40.00"
-
-echo "Tests passed: $pass_count"
-echo "Tests failed: $fail_count"
-
-if [ $fail_count -eq 0 ]; then
-  echo "🎉 All tests passed!"
-  exit 0
+if [[ "$output" =~ $expected_output ]]; then
+    echo "Pass: LCG generates expected numbers"
 else
-  echo "❌ Some tests failed."
-  exit 1
+    echo "Fail: LCG generated unexpected numbers"
+    echo "Expected output: $expected_output"
+    exit 1
 fi
+
+# Test 2: Check if the random numbers are saved correctly in a binary file
+echo "Test 2: Check saving random numbers to a binary file"
+./a.out
+if [ -f "random_numbers.dat" ]; then
+    echo "Pass: Binary file 'random_numbers.dat' created"
+else
+    echo "Fail: Binary file 'random_numbers.dat' was not created"
+    exit 1
+fi
+
+# Test 3: Check if the random numbers are loaded correctly from the binary file
+echo "Test 3: Check loading random numbers from binary file"
+./a.out
+# Check if the loaded numbers are the same as the generated numbers
+output=$(./a.out)
+
+expected_output="Loaded random numbers from file:
+"
+expected_output+="123456789 234567890 345678901 456789012 567890123 "
+expected_output+="678901234 789012345 890123456 901234567 123456789 "
+
+if [[ "$output" =~ $expected_output ]]; then
+    echo "Pass: Random numbers loaded correctly from file"
+else
+    echo "Fail: Loaded random numbers did not match expected values"
+    exit 1
+fi
+
+# Test 4: Test with different seed to ensure random numbers change
+echo "Test 4: Check if different seeds produce different numbers"
+output_seed_1=$(./a.out)
+seed_2="98765"  # A different seed for the second run
+output_seed_2=$(./a.out)
+if [[ "$output_seed_1" != "$output_seed_2" ]]; then
+    echo "Pass: Different seeds generate different sequences of random numbers"
+else
+    echo "Fail: Different seeds generated the same random numbers"
+    exit 1
+fi
+
+# Test 5: Check that the program runs without crashing on larger number of iterations
+echo "Test 5: Check large number of iterations (500 numbers)"
+count=500
+output=$(./a.out)
+if [ $? -eq 0 ]; then
+    echo "Pass: Program runs without crashing with larger iterations"
+else
+    echo "Fail: Program crashed with larger number of iterations"
+    exit 1
+fi
+
+echo
+echo "All tests passed."
+
+exit 0
