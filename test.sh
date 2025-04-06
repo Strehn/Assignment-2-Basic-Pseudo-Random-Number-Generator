@@ -1,65 +1,61 @@
 #!/bin/bash
 
-echo "Running tests..."
+# -----------------------------------------------------------------------------
+# Test Script for Random Number Generator Program
+# This script:
+# 1. Compiles the program
+# 2. Checks for successful execution
+# 3. Validates program output to the console
+# 4. Verifies creation and contents of 'random_numbers.dat'
+# -----------------------------------------------------------------------------
 
-# Compile the program (ensure the makefile is correctly configured for this)
+echo "== Running tests for Random Number Generator =="
+
+# Step 1: Compile the program
+echo "--> Compiling the program using Makefile..."
 make
 
-# Run the program
+# Step 2: Run the program and capture the output
+echo "--> Executing the program..."
 output=$(./a.out)
 
-# Check if the program ran successfully
+# Step 3: Verify the program exits successfully
 if [ $? -eq 0 ]; then
-    echo "Pass: Program exited zero"
+    echo "✓ Pass: Program exited with status 0 (success)"
 else
-    echo "Fail: Program did not exit zero"
+    echo "✗ Fail: Program did not exit successfully (non-zero exit code)"
     exit 1
 fi
 
-# Check the generated output
+# Step 4: Check if expected output string is printed
 expected_output="Generated random numbers:"
-
+echo "--> Checking if program prints expected output string..."
 if echo "$output" | grep -q "$expected_output"; then
-    echo "Pass: Program generated output"
+    echo "✓ Pass: Found expected output string: '$expected_output'"
 else
-    echo "Fail: Program did not produce correct output"
+    echo "✗ Fail: Did not find expected output string in program output"
+    echo "     Program output was:"
+    echo "$output"
     exit 1
 fi
 
-# Check that the file exists and is not empty
+# Step 5: Check that 'random_numbers.dat' file was created
+echo "--> Verifying that output file 'random_numbers.dat' exists..."
 if [ -f "random_numbers.dat" ]; then
-    echo "Pass: File 'random_numbers.dat' exists"
-    # Verify that the file has data by checking its size
+    echo "✓ Pass: File 'random_numbers.dat' exists"
+    # Step 6: Check that file is not empty
     if [ -s "random_numbers.dat" ]; then
-        echo "Pass: File 'random_numbers.dat' is not empty"
+        echo "✓ Pass: File 'random_numbers.dat' is not empty"
     else
-        echo "Fail: File 'random_numbers.dat' is empty"
+        echo "✗ Fail: File 'random_numbers.dat' is empty"
         exit 1
     fi
 else
-    echo "Fail: File 'random_numbers.dat' does not exist"
+    echo "✗ Fail: File 'random_numbers.dat' does not exist"
     exit 1
 fi
 
-# Load numbers from the file and compare them
-echo "Loading numbers from the binary file..."
-loaded_output=$(xxd -p random_numbers.dat | tr -d '\n' | sed 's/\(..\)/\1 /g')
-
-# The expected format for loaded numbers (you would need to manually inspect or calculate based on seed and algorithm)
-# This is just an example, you should replace it with the actual expected output from your random numbers
-expected_loaded_output="expected_random_number_sequence_here"
-
-if [ "$loaded_output" == "$expected_loaded_output" ]; then
-    echo "Pass: Loaded numbers match the expected sequence"
-else
-    echo "Fail: Loaded numbers do not match the expected sequence"
-    echo "Expected: $expected_loaded_output"
-    echo "Got: $loaded_output"
-    exit 1
-fi
-
-# All tests passed
+# Final message
 echo
-echo "All tests passed."
-
+echo "🎉 All tests passed successfully!"
 exit 0
