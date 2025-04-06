@@ -4,52 +4,42 @@ Date
 Course
 */
 
-#include <stdio.h>
+include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
+#include <time.h>
 
-// Function Prototypes
-// Generates a pseudo-random number using the Linear Congruential Generator (LCG) algorithm.
-unsigned int lcg(unsigned int seed);
-
-// Saves the generated random numbers to a binary file.
-void save_random_numbers_to_file(const char *filename, unsigned int *numbers, size_t count);
-
-// Loads the random numbers from a binary file into an array.
-void load_random_numbers_from_file(const char *filename, unsigned int *
-
+// Function prototypes
+void generate_random_numbers(int *numbers, int count, unsigned int seed);
+void save_random_numbers_to_file(const char *filename, int *numbers, int count);
+void load_random_numbers_from_file(const char *filename, int *numbers, int count);
+void print_random_numbers(int *numbers, int count);
 
 int main() {
-    unsigned int seed;  // Initial seed value
-    unsigned int random_numbers[];  // Array to store generated random numbers
-    size_t count = 100;  // Number of random numbers to generate
+    // Define how many random numbers we want to generate
+    int count = 10;
+    int numbers[count]; // Array to store generated numbers
 
-    // Generate random numbers using the LCG algorithm
-    for (size_t i = 0; i < count; i++) {
-        random_numbers[i] = lcg(seed);
-        seed = random_numbers[i];  // Update seed for the next random number
-    }
+    // Use the current time as a seed for randomness (can also accept user input)
+    unsigned int seed = time(NULL); 
 
-    // Display the generated random numbers
+    // Generate random numbers using LCG (Linear Congruential Generator)
+    generate_random_numbers(numbers, count, seed);
+
+    // Print the random numbers
     printf("Generated random numbers:\n");
-    for (size_t i = 0; i < count; i++) {
-        printf("%u ", random_numbers[i]);
-    }
-    printf("\n");
+    print_random_numbers(numbers, count);
 
     // Save the random numbers to a binary file
-    save_random_numbers_to_file("random_numbers.dat", random_numbers, count);
+    save_random_numbers_to_file("random_numbers.dat", numbers, count);
+    printf("\nRandom numbers saved to 'random_numbers.dat'.\n");
 
-    // Load the random numbers from the binary file
-    unsigned int loaded_numbers;
+    // Load the numbers back from the file
+    int loaded_numbers[count];
     load_random_numbers_from_file("random_numbers.dat", loaded_numbers, count);
 
-    // Display the loaded random numbers (for verification)
-    printf("Loaded random numbers from file:\n");
-    for (size_t i = 0; i < count; i++) {
-        printf("%u ", loaded_numbers[i]);
-    }
-    printf("\n");
+    // Print loaded numbers
+    printf("\nLoaded random numbers from file:\n");
+    print_random_numbers(loaded_numbers, count);
 
     return 0;
 }
