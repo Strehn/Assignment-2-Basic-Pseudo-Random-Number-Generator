@@ -1,15 +1,24 @@
+# Compiler and flags
 CC = gcc
-CFLAGS = -Wall -Wextra -std=c99
-TARGET = password_strength
-SRC = password_strength.c
+CFLAGS = -Wall -g -std=c99
 
+# Target executable
+TARGET = a.out
+
+# Default target
 all: $(TARGET)
 
-$(TARGET): $(SRC)
-	$(CC) $(CFLAGS) -o $(TARGET) $(SRC)
+# Compile the program
+$(TARGET): main.c
+	$(CC) $(CFLAGS) -o $(TARGET) main.c
 
-test: $(TARGET)
-	./test.sh
-
+# Clean up the generated files (e.g., object files, executable)
 clean:
-	rm -f $(TARGET)
+	rm -f $(TARGET) random_numbers.dat
+
+# Run the tests (typically invoked by the test script)
+run: $(TARGET)
+	./$(TARGET)
+
+# Phony targets
+.PHONY: all clean run
